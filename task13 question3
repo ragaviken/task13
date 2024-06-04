@@ -1,0 +1,65 @@
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class WriteExcel {
+    public static void main(String[] args) {
+        // Create a new workbook
+        Workbook workbook = new XSSFWorkbook();
+
+        // Create a new sheet with the name "Sheet1"
+        Sheet sheet = workbook.createSheet("Sheet1");
+
+        // Create column headers
+        String[] headers = {"Name", "Age", "Email"};
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+        }
+
+        // Write data to the sheet
+        Object[][] data = {
+            {"John Doe", 30, "john@test.com"},
+            {"Jane Doe", 28, "jane@test.com"},
+            {"Bob Smith", 35, "bob@example.com"},
+            {"Swapnil", 37, "swapnil@example.com"}
+        };
+
+        int rowNum = 1;
+        for (Object[] rowData : data) {
+            Row row = sheet.createRow(rowNum++);
+            for (int colNum = 0; colNum < rowData.length; colNum++) {
+                Cell cell = row.createCell(colNum);
+                if (rowData[colNum] instanceof String) {
+                    cell.setCellValue((String) rowData[colNum]);
+                } else if (rowData[colNum] instanceof Integer) {
+                    cell.setCellValue((Integer) rowData[colNum]);
+                }
+            }
+        }
+
+        // Resize columns to fit the content
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // Write the workbook to a file
+        try (FileOutputStream fileOut = new FileOutputStream("data.xlsx")) {
+            workbook.write(fileOut);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // Close the workbook
+            try {
+                workbook.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Excel file written successfully!");
+    }
+}
